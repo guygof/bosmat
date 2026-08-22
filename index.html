@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta content="width=device-width, initial-scale=1">
+<title>שאלון הכרות — בשמת ברוך · ריפוי בעיסוק</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --teal: #4d9b9b;
+    --teal-dark: #2e6b74;
+    --coral: #e8837a;
+    --bg: #f6f9f9;
+    --card: #ffffff;
+    --text: #2b3a3e;
+    --line: #d7e5e5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Assistant', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+  }
+  header img {
+    width: 160px;
+    max-width: 50vw;
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(46,107,116,.12);
+  }
+  header h1 {
+    color: var(--teal-dark);
+    margin: 0.5rem 0 0.25rem;
+    font-size: 2rem;
+  }
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1rem 1rem 4rem;
+  }
+  form {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 4px rgba(46,107,116,.06);
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin: 1rem 0 0.25rem;
+  }
+  label:first-of-type { margin-top: 0; }
+  input[type="text"], input[type="date"], input[type="tel"],
+  input[type="email"], input[type="number"], textarea {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font: inherit;
+    background: #fdfdfd;
+  }
+  input:focus, textarea:focus {
+    outline: 2px solid var(--teal);
+    border-color: var(--teal);
+  }
+  textarea { min-height: 5rem; resize: vertical; }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1rem;
+  }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+  .checks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.4rem 1rem;
+    margin-top: 0.5rem;
+  }
+  .checks label {
+    font-weight: 400;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .checks input { accent-color: var(--coral); width: 1.1rem; height: 1.1rem; }
+  button {
+    display: block;
+    width: 100%;
+    padding: 0.9rem;
+    font: inherit;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #fff;
+    background: var(--teal);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  button:hover { background: var(--teal-dark); }
+  .required-note { color: var(--coral); font-size: 0.9rem; margin-bottom: 1rem; }
+  body.rendering button, body.rendering #status, body.rendering .required-note { display: none; }
+  .req { color: var(--coral); }
+</style>
+</head>
+<body>
+<header>
+  <img src="logo.png" alt="בשמת ברוך — ריפוי בעיסוק">
+  <h1>שאלון הכרות</h1>
+</header>
+<main>
+<form action="https://formsubmit.co/guygof98@gmail.com" method="POST" enctype="multipart/form-data" target="submit-sink">
+
+  <p class="required-note">שדות המסומנים ב-<span class="req">*</span> הם שדות חובה</p>
+
+    <div class="row">
+      <div>
+        <label for="child_name">שם הילד <span class="req">*</span></label>
+        <input type="text" id="child_name" required>
+      </div>
+      <div>
+        <label for="fill_date">תאריך מילוי השאלון</label>
+        <input type="date" id="fill_date">
+      </div>
+      <div>
+        <label for="birth_date">תאריך לידה <span class="req">*</span></label>
+        <input type="date" id="birth_date" required>
+      </div>
+      <div>
+        <label for="age">גיל</label>
+        <input type="text" id="age" inputmode="numeric">
+      </div>
+    </div>
+    <label for="address">כתובת</label>
+    <input type="text" id="address">
+    <label for="parents">שמות ההורים <span class="req">*</span></label>
+    <input type="text" id="parents" required>
+    <div class="row">
+      <div>
+        <label for="phones">טלפונים <span class="req">*</span></label>
+        <input type="tel" id="phones" autocomplete="tel" required>
+      </div>
+      <div>
+        <label for="email">כתובת דואר אלקטרוני <span class="req">*</span></label>
+        <input type="email" id="email" autocomplete="email" required>
+      </div>
+    </div>
+    <label for="school">גן / בי"ס אליו משתייך הילד</label>
+    <input type="text" id="school">
+    <label for="diagnosed">האם הילד מאובחן עם קושי?</label>
+    <input type="text" id="diagnosed">
+    <div class="row">
+      <div>
+        <label for="diagnosis">מהי אבחנתו?</label>
+        <input type="text" id="diagnosis">
+      </div>
+      <div>
+        <label for="diagnosis_when">מתי אובחן?</label>
+        <input type="text" id="diagnosis_when">
+      </div>
+      <div>
+        <label for="siblings">מס' ילדים בבית</label>
+        <input type="number" id="siblings" min="1">
+      </div>
+      <div>
+        <label for="birth_order">מקום הילד בין האחים</label>
+        <input type="text" id="birth_order">
+      </div>
+    </div>
+    <label for="other_treatments">טיפולים נוספים שהילד מקבל</label>
+    <textarea id="other_treatments"></textarea>
+    <label for="pregnancy">האם האם סבלה ממחלות או תאונות בזמן ההיריון?</label>
+    <input type="text" id="pregnancy">
+    <label for="birth_course">מהלך הלידה</label>
+    <textarea id="birth_course"></textarea>
+    <label for="neuro">האם התגלו בעיות נוירולוגיות או רפואיות לאחר הלידה?</label>
+    <textarea id="neuro"></textarea>
+    <label for="past_illness">האם הילד סבל ממחלות או תאונות בעבר?</label>
+    <input type="text" id="past_illness">
+    <label for="meds">האם הילד לוקח תרופות?</label>
+    <input type="text" id="meds">
+    <label for="motor_milestones">רכישת אבני דרך מוטוריות</label>
+    <input type="text" id="motor_milestones">
+    <label for="speech_milestones">רכישת אבני דרך שפתיות</label>
+    <input type="text" id="speech_milestones">
+    <div class="row">
+      <div>
+        <label for="vision_when">מתי עבר לאחרונה בדיקת תפקודי ראיה?</label>
+        <input type="text" id="vision_when">
+      </div>
+      <div>
+        <label for="vision_results">מה התוצאות?</label>
+        <input type="text" id="vision_results">
+      </div>
+      <div>
+        <label for="hearing_when">מתי עבר לאחרונה בדיקת שמיעה?</label>
+        <input type="text" id="hearing_when">
+      </div>
+      <div>
+        <label for="hearing_results">מהן התוצאות?</label>
+        <input type="text" id="hearing_results">
+      </div>
+    </div>
+    <label for="sleep">הרגלי שינה</label>
+    <textarea id="sleep"></textarea>
+    <label for="food">אוכל</label>
+    <textarea id="food"></textarea>
+    <label for="allergies">אלרגיות או רגישויות לאוכל?</label>
+    <input type="text" id="allergies">
+    <label for="willing_school">האם הילד הולך מרצון למסגרת החינוכית?</label>
+    <input type="text" id="willing_school">
+    <label for="plays_with">האם הילד משחק עם ילדים אחרים בגן או בבית ספר?</label>
+    <textarea id="plays_with"></textarea>
+    <label for="verbal">מהן יכולותיו הוורבליות?</label>
+    <textarea id="verbal"></textarea>
+    <label for="instructions">כיצד הוא ממלא הוראות?</label>
+    <textarea id="instructions"></textarea>
+    <label for="small_group">האם הוא מסתדר בעבודה בקבוצה קטנה?</label>
+    <textarea id="small_group"></textarea>
+    <label for="dressing">האם הילד זקוק לעזרה בהלבשה?</label>
+    <input type="text" id="dressing">
+    <label for="buttons">האם הילד סוגר כפתורים ורוכסנים?</label>
+    <input type="text" id="buttons">
+    <label for="bathing">האם הילד מתרחץ לבד?</label>
+    <input type="text" id="bathing">
+    <label for="toilet">האם הילד גמול ועצמאי בשירותים?</label>
+    <input type="text" id="toilet">
+    <label for="routine">האם הילד מכיר ועוקב אחר שגרת הבוקר והערב עם מעט תזכורת?</label>
+    <input type="text" id="routine">
+    <label for="changes">כיצד הילד מגיב לשינויים בשגרת היום?</label>
+    <input type="text" id="changes">
+    <label for="busy_env">כיצד מגיב הילד להימצאות בסביבה עמוסה? (סופר, קניון...)</label>
+    <textarea id="busy_env"></textarea>
+    <label for="textures">האם יש לילד טקסטורות שמפריעות לו? (ביגוד, משחת שיניים, חול, דשא, מאכלים)</label>
+    <textarea id="textures"></textarea>
+    <label for="story_time">כמה זמן ישב הילד לקריאת סיפור?</label>
+    <input type="text" id="story_time">
+    <label for="enjoys">ממה הילד נהנה?</label>
+    <textarea id="enjoys"></textarea>
+    <p style="font-weight:600;margin:1rem 0 0.25rem">אנא סמנו חששות שלכם לגבי הילד:</p>
+    <div class="checks">
+      <label><input type="checkbox" value="הבנת הוראות">הבנת הוראות</label>
+      <label><input type="checkbox" value="יכולת ביטוי עצמית">יכולת ביטוי עצמית</label>
+      <label><input type="checkbox" value="חוסר דיבור">חוסר דיבור</label>
+      <label><input type="checkbox" value="קואורדינציה">קואורדינציה</label>
+      <label><input type="checkbox" value="קשב">קשב</label>
+      <label><input type="checkbox" value="עצמאות אישית">עצמאות אישית</label>
+      <label><input type="checkbox" value="אכילה">אכילה</label>
+      <label><input type="checkbox" value="תחושה">תחושה</label>
+      <label><input type="checkbox" value="מיומנויות חברתיות">מיומנויות חברתיות</label>
+      <label><input type="checkbox" value="אינטראקציות עם אחרים">אינטראקציות עם אחרים</label>
+      <label><input type="checkbox" value="התנהגות">התנהגות</label>
+      <label><input type="checkbox" value="תפקודי פה">תפקודי פה</label>
+      <label><input type="checkbox" value="מוטוריקה עדינה">מוטוריקה עדינה</label>
+      <label><input type="checkbox" value="כתיבה">כתיבה</label>
+      <label><input type="checkbox" value="קריאה">קריאה</label>
+    </div>
+    <label for="story">תאר/י את סיפור ילדך או כל דבר שנראה לך רלוונטי (סימנים ראשונים שהטרידו אותך? מחלות קשורות? או אינפורמציה אחרת רלוונטית למצבו של הילד)</label>
+    <textarea id="story" rows="8"></textarea>
+
+  <input type="hidden" id="f_subject" name="_subject">
+  <input type="hidden" id="f_replyto" name="_replyto">
+  <input type="hidden" name="_template" value="box">
+  <input type="hidden" name="_captcha" value="false">
+  <input type="hidden" id="f_summary" name="השאלון">
+  <input type="file" id="f_attachment" name="attachment" hidden>
+
+  <button type="submit">שליחת השאלון</button>
+  <p id="status" role="status" style="text-align:center;font-weight:600"></p>
+</form>
+<iframe name="submit-sink" id="submit-sink" hidden></iframe>
+</main>
+<script>
+  document.getElementById('fill_date').valueAsDate = new Date();
+
+  // Compose the answers as one readable RTL letter instead of name-value pairs
+  function composeSummary(form) {
+    const lines = [];
+    let checksDone = false;
+    for (const el of form.querySelectorAll('input, textarea')) {
+      if (el.type === 'hidden' || el.type === 'file') continue;
+      if (el.type === 'checkbox') {
+        if (checksDone) continue;
+        checksDone = true;
+        const checked = [...form.querySelectorAll('.checks input:checked')].map(c => c.value);
+        if (checked.length) lines.push('חששות שסומנו: ' + checked.join(', '), '');
+        continue;
+      }
+      if (!el.value.trim()) continue;
+      const q = form.querySelector(`label[for="${el.id}"]`).firstChild.textContent.trim();
+      let v = el.value.trim();
+      if (el.type === 'date') v = new Date(el.value).toLocaleDateString('he-IL');
+      const sep = /[?)]$/.test(q) ? '\n' : ': ';
+      lines.push(q + sep + v, '');
+    }
+    // Email templates render LTR; RTL-embedding marks (U+202B/U+202C) keep each line ordered correctly
+    const RLE = '\u202B', PDF = '\u202C';
+    return lines.map(l => l ? RLE + l.replace(/\n/g, PDF + '\n' + RLE) + PDF : l).join('\n');
+  }
+
+  async function fetchAsDataURI(url) {
+    const blob = await (await fetch(url)).blob();
+    return new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+  }
+
+  // Google Fonts CSS with the hebrew+latin font files inlined, so the SVG snapshot can use them offline
+  let fontCssPromise;
+  function getFontCss() {
+    fontCssPromise ??= (async () => {
+      const css = await (await fetch(document.querySelector('link[rel="stylesheet"][href*="fonts.googleapis"]').href)).text();
+      const blocks = css.match(/\/\* [a-z-]+ \*\/\s*@font-face\s*\{[^}]+\}/g) || [];
+      let out = blocks.filter(b => /\/\* (hebrew|latin) \*\//.test(b)).join('\n');
+      for (const u of new Set([...out.matchAll(/url\((https:[^)]+)\)/g)].map(m => m[1]))) {
+        out = out.split(u).join(await fetchAsDataURI(u));
+      }
+      return out;
+    })();
+    return fontCssPromise;
+  }
+
+  // Snapshot the filled page into an A4 PDF via SVG foreignObject (native browser
+  // rendering — correct Hebrew bidi, unlike html2canvas)
+  async function generatePdf() {
+    const W = 794, S = 2, PAGE_H = Math.round(W * 297 / 210);
+    for (const el of form.querySelectorAll('input, textarea')) {
+      if (el.type === 'file') continue;
+      if (el.type === 'checkbox') el.toggleAttribute('checked', el.checked);
+      else if (el.tagName === 'TEXTAREA') el.textContent = el.value;
+      else el.setAttribute('value', el.value);
+    }
+    const fontCss = await getFontCss();
+    const logoData = await fetchAsDataURI('logo.png');
+    // lay the live page out at PDF width to measure height and safe page-break lines
+    window.scrollTo(0, 0);
+    document.body.classList.add('rendering');
+    document.body.style.width = W + 'px';
+    const H = document.body.scrollHeight;
+    // break pages only above a question label (keeps each label + its field together)
+    const cuts = [...document.querySelectorAll('label, p')]
+      .filter(el => !el.closest('.checks'))
+      .map(el => Math.floor(el.getBoundingClientRect().top) - 8)
+      .filter(y => y > 0).sort((a, b) => a - b);
+    const clone = document.body.cloneNode(true);
+    document.body.style.width = '';
+    document.body.classList.remove('rendering');
+    clone.querySelectorAll('script').forEach(s => s.remove());
+    clone.querySelector('header img').setAttribute('src', logoData);
+    clone.setAttribute('style', 'width:' + W + 'px;margin:0');
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W * S + '" height="' + H * S + '">' +
+      '<g transform="scale(' + S + ')"><foreignObject width="' + W + '" height="' + H + '">' +
+      '<div xmlns="http://www.w3.org/1999/xhtml" lang="he" dir="rtl">' +
+      '<style>' + fontCss + document.querySelector('style').textContent + '</style>' +
+      new XMLSerializer().serializeToString(clone) +
+      '</div></foreignObject></g></svg>';
+    const img = new Image();
+    await new Promise((ok, bad) => {
+      img.onload = ok; img.onerror = bad;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
+    const pdf = new jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+    let y = 0, first = true;
+    while (y < H) {
+      let end = Math.min(y + PAGE_H, H);
+      if (end < H) {
+        const safe = cuts.filter(c => c > y + 200 && c < y + PAGE_H);
+        if (safe.length) end = safe[safe.length - 1];
+      }
+      const c = document.createElement('canvas');
+      c.width = W * S; c.height = (end - y) * S;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#f6f9f9';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, y * S, c.width, c.height, 0, 0, c.width, c.height);
+      if (!first) pdf.addPage();
+      first = false;
+      pdf.addImage(c.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, 210, (end - y) / PAGE_H * 297);
+      y = end;
+    }
+    return pdf.output('blob');
+  }
+
+  const form = document.querySelector('form');
+  const status = document.getElementById('status');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button');
+    btn.disabled = true;
+    status.style.color = 'var(--teal-dark)';
+    status.textContent = 'שולח…';
+    try {
+      const pdfBlob = await generatePdf();
+      document.getElementById('f_subject').value = 'שאלון הכרות — ' + document.getElementById('child_name').value.trim();
+      document.getElementById('f_replyto').value = document.getElementById('email').value.trim();
+      document.getElementById('f_summary').value = composeSummary(form);
+      const dt = new DataTransfer();
+      dt.items.add(new File([pdfBlob], 'intake-form.pdf', { type: 'application/pdf' }));
+      document.getElementById('f_attachment').files = dt.files;
+      // native multipart POST into a hidden iframe — the AJAX endpoint drops attachments
+      const sink = document.getElementById('submit-sink');
+      const done = new Promise((ok, bad) => {
+        sink.onload = ok;
+        setTimeout(() => bad(new Error('timeout')), 30000);
+      });
+      form.submit();
+      await done;
+      status.textContent = 'השאלון נשלח בהצלחה, תודה רבה!';
+      form.querySelectorAll('input, textarea, button').forEach(el => el.disabled = true);
+    } catch (err) {
+      document.body.classList.remove('rendering');
+      btn.disabled = false;
+      status.style.color = 'var(--coral)';
+      status.textContent = 'השליחה נכשלה, אנא נסו שוב.';
+    }
+  });
+</script>
+</body>
+</html>
