@@ -115,6 +115,7 @@
   }
   button:hover { background: var(--teal-dark); }
   .required-note { color: var(--coral); font-size: 0.9rem; margin-bottom: 1rem; }
+  .subhead { font-weight: 700; color: var(--teal-dark); margin: 1.5rem 0 0; }
   body.rendering button, body.rendering #status, body.rendering .required-note { display: none; }
   .req { color: var(--coral); }
 </style>
@@ -149,18 +150,32 @@
     </div>
     <label for="address">כתובת</label>
     <input type="text" id="address">
-    <label for="parents">שמות ההורים <span class="req">*</span></label>
-    <input type="text" id="parents" required>
+    <p class="subhead">הורה 1</p>
     <div class="row">
       <div>
-        <label for="phones">טלפונים <span class="req">*</span></label>
-        <input type="tel" id="phones" autocomplete="tel" required>
+        <label for="p1_name">שם מלא <span class="req">*</span></label>
+        <input type="text" id="p1_name" required>
       </div>
       <div>
-        <label for="email">כתובת דואר אלקטרוני <span class="req">*</span></label>
-        <input type="email" id="email" autocomplete="email" required>
+        <label for="p1_phone">טלפון <span class="req">*</span></label>
+        <input type="tel" id="p1_phone" required>
       </div>
     </div>
+    <label for="p1_email">כתובת דואר אלקטרוני <span class="req">*</span></label>
+    <input type="email" id="p1_email" required>
+    <p class="subhead">הורה 2</p>
+    <div class="row">
+      <div>
+        <label for="p2_name">שם מלא</label>
+        <input type="text" id="p2_name">
+      </div>
+      <div>
+        <label for="p2_phone">טלפון</label>
+        <input type="tel" id="p2_phone">
+      </div>
+    </div>
+    <label for="p2_email">כתובת דואר אלקטרוני</label>
+    <input type="email" id="p2_email">
     <label for="school">גן / בי"ס אליו משתייך הילד</label>
     <input type="text" id="school">
     <label for="diagnosed">האם הילד מאובחן עם קושי?</label>
@@ -193,7 +208,7 @@
     <textarea id="neuro"></textarea>
     <label for="past_illness">האם הילד סבל ממחלות או תאונות בעבר?</label>
     <input type="text" id="past_illness">
-    <label for="meds">האם הילד לוקח תרופות?</label>
+    <label for="meds">האם הילד נוטל תרופות?</label>
     <input type="text" id="meds">
     <label for="motor_milestones">רכישת אבני דרך מוטוריות</label>
     <input type="text" id="motor_milestones">
@@ -251,13 +266,13 @@
     <textarea id="textures"></textarea>
     <label for="story_time">כמה זמן ישב הילד לקריאת סיפור?</label>
     <input type="text" id="story_time">
-    <label for="enjoys">ממה הילד נהנה?</label>
+    <label for="enjoys">ממה הילד נהנה ומה משמח אותו?</label>
     <textarea id="enjoys"></textarea>
     <p style="font-weight:600;margin:1rem 0 0.25rem">אנא סמנו חששות שלכם לגבי הילד:</p>
     <div class="checks">
       <label><input type="checkbox" value="הבנת הוראות">הבנת הוראות</label>
       <label><input type="checkbox" value="יכולת ביטוי עצמית">יכולת ביטוי עצמית</label>
-      <label><input type="checkbox" value="חוסר דיבור">חוסר דיבור</label>
+      <label><input type="checkbox" value="התארגנות">התארגנות</label>
       <label><input type="checkbox" value="קואורדינציה">קואורדינציה</label>
       <label><input type="checkbox" value="קשב">קשב</label>
       <label><input type="checkbox" value="עצמאות אישית">עצמאות אישית</label>
@@ -269,9 +284,9 @@
       <label><input type="checkbox" value="תפקודי פה">תפקודי פה</label>
       <label><input type="checkbox" value="מוטוריקה עדינה">מוטוריקה עדינה</label>
       <label><input type="checkbox" value="כתיבה">כתיבה</label>
-      <label><input type="checkbox" value="קריאה">קריאה</label>
+      <label><input type="checkbox" value="למידה">למידה</label>
     </div>
-    <label for="story">תאר/י את סיפור ילדך או כל דבר שנראה לך רלוונטי (סימנים ראשונים שהטרידו אותך? מחלות קשורות? או אינפורמציה אחרת רלוונטית למצבו של הילד)</label>
+    <label for="story">תאר/י את סיפור ילדך או כל דבר שנראה לך רלוונטי (סימנים ראשונים שהטרידו אותך? מחלות קשורות? או אינפורמציה אחרת רלוונטית)</label>
     <textarea id="story" rows="8"></textarea>
 
   <input type="hidden" id="f_subject" name="_subject">
@@ -315,7 +330,9 @@
         continue;
       }
       if (!el.value.trim()) continue;
-      const q = form.querySelector(`label[for="${el.id}"]`).firstChild.textContent.trim();
+      let q = form.querySelector(`label[for="${el.id}"]`).firstChild.textContent.trim();
+      if (el.id.startsWith('p1_')) q = 'הורה 1 — ' + q;
+      else if (el.id.startsWith('p2_')) q = 'הורה 2 — ' + q;
       let v = el.value.trim();
       if (el.type === 'date') v = new Date(el.value).toLocaleDateString('he-IL');
       const sep = /[?)]$/.test(q) ? '\n' : ': ';
@@ -418,7 +435,8 @@
     try {
       const pdfBlob = await generatePdf();
       document.getElementById('f_subject').value = 'שאלון הכרות — ' + document.getElementById('child_name').value.trim();
-      document.getElementById('f_replyto').value = document.getElementById('email').value.trim();
+      document.getElementById('f_replyto').value =
+        document.getElementById('p1_email').value.trim() || document.getElementById('p2_email').value.trim();
       document.getElementById('f_summary').value = composeSummary(form);
       const dt = new DataTransfer();
       dt.items.add(new File([pdfBlob], 'intake-form.pdf', { type: 'application/pdf' }));
