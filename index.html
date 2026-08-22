@@ -32,7 +32,7 @@
     padding: 2rem 1rem 1rem;
   }
   header img {
-    width: 160px;
+    width: 200px;
     max-width: 50vw;
     border-radius: 50%;
     box-shadow: 0 2px 10px rgba(46,107,116,.12);
@@ -59,7 +59,6 @@
     font-weight: 600;
     margin: 1rem 0 0.25rem;
   }
-  label:first-of-type { margin-top: 0; }
   input[type="text"], input[type="date"], input[type="tel"],
   input[type="email"], input[type="number"], textarea {
     width: 100%;
@@ -74,6 +73,12 @@
     border-color: var(--teal);
   }
   textarea { min-height: 5rem; resize: vertical; }
+  /* iOS Safari collapses/overlaps native date inputs without explicit sizing */
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 2.75rem;
+  }
   .row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -139,7 +144,7 @@
       </div>
       <div>
         <label for="age">גיל</label>
-        <input type="text" id="age" inputmode="numeric">
+        <input type="text" id="age">
       </div>
     </div>
     <label for="address">כתובת</label>
@@ -283,6 +288,18 @@
 </main>
 <script>
   document.getElementById('fill_date').valueAsDate = new Date();
+
+  document.getElementById('birth_date').addEventListener('change', (e) => {
+    const b = e.target.valueAsDate;
+    if (!b) return;
+    const now = new Date();
+    let months = (now.getFullYear() - b.getFullYear()) * 12 + now.getMonth() - b.getMonth();
+    if (now.getDate() < b.getDate()) months--;
+    if (months < 0) return;
+    const y = Math.floor(months / 12), m = months % 12;
+    document.getElementById('age').value =
+      y === 0 ? `${m} חודשים` : m ? `${y} שנים ו-${m} חודשים` : `${y} שנים`;
+  });
 
   // Compose the answers as one readable RTL letter instead of name-value pairs
   function composeSummary(form) {
