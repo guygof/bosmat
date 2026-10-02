@@ -117,6 +117,12 @@
   .required-note { color: var(--coral); font-size: 0.9rem; margin-bottom: 1rem; }
   .subhead { font-weight: 700; color: var(--teal-dark); margin: 1.5rem 0 0; }
   body.rendering button, body.rendering #status, body.rendering .required-note { display: none; }
+  /* PDF snapshot: darker, heavier text so it stays legible when printed */
+  body.rendering { --text: #000; --teal-dark: #1d4a50; --line: #8fb0b0; background: #fff; }
+  body.rendering label { font-weight: 700; }
+  body.rendering .checks label { font-weight: 600; }
+  body.rendering input, body.rendering textarea { color: #000; font-weight: 600; background: #fff; }
+  body.rendering form { box-shadow: none; }
   .req { color: var(--coral); }
 </style>
 </head>
@@ -376,6 +382,7 @@
     const fontCss = await getFontCss();
     const logoData = await fetchAsDataURI('logo.png');
     // lay the live page out at PDF width to measure height and safe page-break lines
+    const scrollY = window.scrollY;
     window.scrollTo(0, 0);
     document.body.classList.add('rendering');
     document.body.style.width = W + 'px';
@@ -388,6 +395,7 @@
     const clone = document.body.cloneNode(true);
     document.body.style.width = '';
     document.body.classList.remove('rendering');
+    window.scrollTo(0, scrollY);
     clone.querySelectorAll('script').forEach(s => s.remove());
     clone.querySelector('header img').setAttribute('src', logoData);
     clone.setAttribute('style', 'width:' + W + 'px;margin:0');
@@ -413,12 +421,12 @@
       const c = document.createElement('canvas');
       c.width = W * S; c.height = (end - y) * S;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#f6f9f9';
+      ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, c.width, c.height);
       ctx.drawImage(img, 0, y * S, c.width, c.height, 0, 0, c.width, c.height);
       if (!first) pdf.addPage();
       first = false;
-      pdf.addImage(c.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, 210, (end - y) / PAGE_H * 297);
+      pdf.addImage(c.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, (end - y) / PAGE_H * 297);
       y = end;
     }
     return pdf.output('blob');
@@ -451,11 +459,13 @@
       await done;
       status.textContent = 'השאלון נשלח בהצלחה, תודה רבה!';
       form.querySelectorAll('input, textarea, button').forEach(el => el.disabled = true);
+      status.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch (err) {
       document.body.classList.remove('rendering');
       btn.disabled = false;
       status.style.color = 'var(--coral)';
       status.textContent = 'השליחה נכשלה, אנא נסו שוב.';
+      status.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   });
 </script>
