@@ -380,13 +380,18 @@
       else el.setAttribute('value', el.value);
     }
     const fontCss = await getFontCss();
-    const logoData = await fetchAsDataURI('logo.png');
     // lay the live page out at PDF width to measure height and safe page-break lines
     const scrollY = window.scrollY;
     window.scrollTo(0, 0);
     document.body.classList.add('rendering');
     document.body.style.width = W + 'px';
     const H = document.body.scrollHeight;
+    const logo = document.querySelector('header img');
+    await logo.decode().catch(() => {});
+    // relative to the body: on narrow RTL screens the widened body overflows to the left
+    const bodyBox = document.body.getBoundingClientRect(), logoRect = logo.getBoundingClientRect();
+    const logoBox = { left: logoRect.left - bodyBox.left, top: logoRect.top - bodyBox.top,
+      width: logoRect.width, height: logoRect.height };
     // break pages only above a question label (keeps each label + its field together)
     const cuts = [...document.querySelectorAll('label, p')]
       .filter(el => !el.closest('.checks'))
@@ -397,7 +402,12 @@
     document.body.classList.remove('rendering');
     window.scrollTo(0, scrollY);
     clone.querySelectorAll('script').forEach(s => s.remove());
-    clone.querySelector('header img').setAttribute('src', logoData);
+    // iOS Safari drops <img> inside SVG foreignObject, so the snapshot gets an empty
+    // placeholder (keeps layout and shadow) and the logo is drawn onto the canvas directly
+    const ph = document.createElement('div');
+    ph.setAttribute('style', 'display:inline-block;width:' + logoBox.width + 'px;height:' +
+      logoBox.height + 'px;border-radius:50%;background:#fff;box-shadow:' + getComputedStyle(logo).boxShadow);
+    clone.querySelector('header img').replaceWith(ph);
     clone.setAttribute('style', 'width:' + W + 'px;margin:0');
     const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W * S + '" height="' + H * S + '">' +
       '<g transform="scale(' + S + ')"><foreignObject width="' + W + '" height="' + H + '">' +
@@ -424,6 +434,15 @@
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, c.width, c.height);
       ctx.drawImage(img, 0, y * S, c.width, c.height, 0, 0, c.width, c.height);
+      if (first) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc((logoBox.left + logoBox.width / 2) * S, (logoBox.top + logoBox.height / 2) * S,
+          Math.min(logoBox.width, logoBox.height) / 2 * S, 0, 2 * Math.PI);
+        ctx.clip();
+        ctx.drawImage(logo, logoBox.left * S, logoBox.top * S, logoBox.width * S, logoBox.height * S);
+        ctx.restore();
+      }
       if (!first) pdf.addPage();
       first = false;
       pdf.addImage(c.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, (end - y) / PAGE_H * 297);
